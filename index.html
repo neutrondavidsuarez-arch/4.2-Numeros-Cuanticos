@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioLearning - Tema 4.2 Números Cuánticos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init({ publicKey: "3LjnpLaDboHWv0VPY" });
+        })();
+    </script>
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .iframe-container { position: relative; width: 100%; height: 75vh; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        .nav-btn { transition: all 0.3s ease; border-bottom: 3px solid transparent; white-space: nowrap; }
+        .nav-btn:hover { transform: translateY(-2px); }
+        .nav-btn.active { border-color: #10b981; color: #10b981; }
+        @keyframes pulse-dot { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+        .dot-pulse { animation: pulse-dot 1.2s infinite; }
+        .question-img { max-width: 100%; height: auto; border-radius: 0.5rem; margin: 0.5rem 0; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans min-h-screen">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex flex-col lg:flex-row justify-between items-center gap-4">
+                <div class="text-center lg:text-left">
+                    <h1 class="text-xl font-black text-emerald-600 tracking-tight">UNIDAD 2</h1>
+                    <p class="text-slate-500 font-bold text-xs uppercase">Tema 4.2: Números Cuánticos</p>
+                </div>
+               
+                <nav class="flex flex-wrap justify-center gap-1 md:gap-4">
+                    <button onclick="prepQuiz('deber', this)" class="nav-btn active px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>🧪</span> Deber
+                    </button>
+                    <button onclick="prepQuiz('evaluacion', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📝</span> Repaso
+                    </button>
+                    <button onclick="prepQuiz('extra', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📚</span> Práctica
+                    </button>
+                    <button onclick="prepQuiz('evaluacion_final', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📊</span> Evaluación
+                    </button>
+                    <button onclick="showSection('pdf', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📋</span> Pizarra
+                    </button>
+                    <button onclick="showSection('video', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>🎥</span> Video
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main id="app" class="max-w-5xl mx-auto p-6">
+    </main>
+    <script>
+        // Usar /preview para que el iframe de Google Drive funcione correctamente
+        const DRIVE_PDF_URL = "https://drive.google.com/file/d/1T14mLhPIIjaTRTFghrfABjJ7bmsvXCf_/preview";
+        const DRIVE_VIDEO_URL = "https://drive.google.com/file/d/1GdrzGCZvmDtz_sHZogW4ijLBEXfeOyCk/preview";
+
+        // PRINCIPAL (Deber + Repaso) 30 preguntas
+        const quizData = [
+          { question: 'El átomo de silicio tiene 14 electrones, por lo que, en su configuración electrónica, diez electrones completan el primero y segundo nivel, de la siguiente manera: ______.  Los cuatro electrones restantes se ubican en el tercer nivel, repartidos en el orbital de s y p. Por lo tanto, la configuración electrónica del silicio es____________.', options: ['1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup> - 1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup>3s<sup>2</sup>3p<sup>4</sup>', '1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup> - 1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup>3s<sup>2</sup>3p<sup>2</sup>', '1s<sup>1</sup>2s<sup>1</sup>2p<sup>8</sup> - 1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup>3s<sup>2</sup>3p<sup>2</sup>', '1s<sup>1</sup>2s<sup>3</sup>2p<sup>6</sup> - 1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup>3s<sup>2</sup>3p<sup>2</sup>'], answer: '1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup> - 1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup>3s<sup>2</sup>3p<sup>2</sup>', explanation: 'La configuración electrónica del silicio, que tiene 14 electrones, se expresa como 1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup>3s<sup>2</sup>3p<sup>2</sup>. Esto indica que los primeros dos niveles están completamente llenos, mientras que en el tercer nivel hay cuatro electrones distribuidos en los orbitales s y p.', multi: 'OFF', maxSelect: 1 },
+           { question: 'En la siguiente ilustración se muestra la distribución electrónica de dos elementos, un metal y un no metal. El metal corresponde al berilio y presenta un número atómico de 4, el no metal corresponde al nitrógeno con un número atómico de 7. <br> <img src="https://i.postimg.cc/dhprhSXT/Captura-de-pantalla-2026-11-04-161400.png" alt="Descripción de la imagen" width="400" height="100"> <br> Con base en la información, son características que describen a los elementos descritos, excepto:', options: ['En el nitrógeno, el último electrón presenta un número cuántico principal igual a 2.', 'En el berilio, el penúltimo electrón presenta un número cuántico de spin igual a +1/2.', 'El nitrógeno presenta 2 orbitales llenos y tres orbitales semillenos.', 'En el berilio, el último electrón presenta los siguientes números cuánticos: n=2; l=0; ml=-1; ms=+1/2.'], answer: 'En el berilio, el último electrón presenta los siguientes números cuánticos: n=2; l=0; ml=-1; ms=+1/2.', explanation: 'En el berilio (Z=4) la configuración es 1s<sup>2</sup>2s<sup>2</sup>. El último electrón está en el orbital 2s, por lo que ml debe ser 0 (no puede ser -1). Esa opción es incorrecta.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Los números cuánticos del último electrón en un átomo son: 4, 0, 0, +½. Si el número de neutrones excede en 3 al número de protones. Hallar el número másico.', options: ['41', '29', '19', '0'], answer: '41', explanation: '<br> <img src="https://i.postimg.cc/Y946NLJZ/Captura-de-pantalla-2026-11-05-113213.png" alt="Descripción de la imagen" width="700" height="500">.', multi: 'OFF', maxSelect: 1 },
+           { question: 'El átomo de aluminio Al, presenta un número atómico de 13. Determine la configuración electrónica del Al<sup>+3</sup>.', options: ['1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup>', '1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup>3s<sup>2</sup>3p<sup>1</sup>', '1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup>3s<sup>1</sup>', '1s<sup>2</sup>2s<sup>2</sup>2p<sup>2</sup>3s<sup>2</sup>'], answer: '1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup>', explanation: 'La configuración electrónica del catión Al<sup>+3</sup> se obtiene al quitar tres electrones del aluminio neutro (número atómico 13), resultando en 1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup>, ya que los electrones eliminados provienen del tercer nivel.', multi: 'OFF', maxSelect: 1 },
+           { question: 'El paladio es un elemento químico, que se usa principalmente en convertidores catalíticos, así como también en joyería y odontología. Si su número atómico es de 46. Determine los electrones del último nivel.', options: ['20', '2', '15', '30'], answer: '2', explanation: '<br> <img src="https://i.postimg.cc/527QPNqX/Captura-de-pantalla-2026-11-05-113626.png" alt="Descripción de la imagen" width="500" height="100">.', multi: 'OFF', maxSelect: 1 },
+           { question: 'El último electrón de un átomo presenta los siguientes números cuánticos: 4; 2; +2; +1/2. Determine los números cuánticos del último electrón para el catión divalente del átomo.', options: ['4; 2; 0; +1/2', '4; 2; +1; +1/2', '4; 2; +2; +1/2', '4; 2; -2; -1/2'], answer: '4; 2; 0; +1/2', explanation: 'Los números cuánticos del último electrón del catión divalente se ajustan a un estado donde se han perdido electrones, lo que cambia sus números cuánticos a 4;2;0;+1/2.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Si el número de neutrones de un átomo es igual a 30. Determine su número de masa, si su ion presenta una carga de +2 y el tercer nivel presenta 5 orbitales desapareados.', options: ['28', '30', '57', '32'], answer: '57', explanation: '<br> <img src="https://i.postimg.cc/BnkQL8BQ/Captura-de-pantalla-2026-11-05-113801.png" alt="Descripción de la imagen" width="550" height="300">.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Determine los cuatro números cuánticos para el último electrón de un átomo con 25 protones, 40 neutrones y 25 electrones.', options: ['3; 2; +2; +1/2', '3; 2; -2; +1/2', '2; 0; -2; +1/2', '3; 2; +2; -1/2'], answer: '3; 2; +2; +1/2', explanation: '<br> <img src="https://i.postimg.cc/25dRk3ck/Captura-de-pantalla-2026-11-05-114126.png" alt="Descripción de la imagen" width="550" height="300">.', multi: 'OFF', maxSelect: 1 },
+           { question: 'La configuración electrónica consiste en la distribución de los electrones en sus niveles, subniveles y orbitales, basándose en el principio de Aufbau, la máxima multiplicidad Hund y el de exclusión de Pauli. Respecto a la distribución electrónica, indique la configuración que no cumpla con los principios mencionados.', options: ['1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>2</sup> 3p<sup>6</sup>', '1s<sup>2</sup> 2s<sup>2</sup> 2p<sub>x</sub><sup>2</sup> 2p<sub>y</sub><sup>2</sup> 2p<sub>z</sub><sup>2</sup>', '1s<sup>2</sup> 2s<sup>2</sup> 2p<sub>x</sub><sup>2</sup> 2p<sub>y</sub><sup>2</sup> 2p<sub>z</sub><sup>1</sup> 3s<sup>1</sup>', '1s<sup>2</sup> 2s<sup>2</sup> 2p<sub>x</sub><sup>1</sup> 2p<sub>y</sub><sup>1</sup> 2p<sub>z</sub><sup>1</sup>'], answer: '1s<sup>2</sup> 2s<sup>2</sup> 2p<sub>x</sub><sup>2</sup> 2p<sub>y</sub><sup>2</sup> 2p<sub>z</sub><sup>1</sup> 3s<sup>1</sup>', explanation: '<br> <img src="https://i.postimg.cc/KYDwXwzW/Captura-de-pantalla-2026-11-05-114228.png" alt="Descripción de la imagen" width="550" height="100">.', multi: 'OFF', maxSelect: 1 },
+           { question: 'El fósforo es un no metal que se encuentra en la naturaleza en forma combinada como los fosfatos, pero nunca en estado fundamental. Es muy reactivo y se oxida espontáneamente en contacto con el oxígeno atmosférico emitiendo luz. Dicho elemento presenta 15 electrones, determine la cantidad de orbitales llenos y orbitales semillenos que posee.', options: ['6 y 3', '4 y 1', '3 y 1', '7 y 2'], answer: '6 y 3', explanation: '<br> <img src="https://i.postimg.cc/7LwtN99x/Captura-de-pantalla-2026-11-05-114358.png" alt="Descripción de la imagen" width="550" height="300">.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Qué número cuántico indica el nivel de energía de un electrón?', options: ['Número cuántico secundario', 'Número cuántico magnético', 'Número cuántico principal', 'Número cuántico de spin'], answer: 'Número cuántico principal', explanation: 'El número cuántico principal indica el nivel de energía en el que se encuentra un electrón dentro de un átomo, siendo fundamental para entender su ubicación.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Cuál es la fórmula para calcular el número máximo de electrones en un nivel de energía dado por n?', options: ['n<sup>2</sup>', '2n', '2n<sup>2</sup>', 'n<sup>2</sup>/2'], answer: '2n<sup>2</sup>', explanation: 'La fórmula 2n<sup>2</sup> se utiliza para calcular el número máximo de electrones en un nivel energético dado por n, reflejando cómo se distribuyen los electrones.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Qué valor puede tomar el número cuántico azimutal (l)?', options: ['Solo números enteros positivos', 'Números enteros desde 0 hasta n-1', 'Cualquier número real', 'Solo números negativos'], answer: 'Números enteros desde 0 hasta n-1', explanation: 'El número cuántico azimutal (l) puede tomar valores enteros desde 0 hasta n−1, lo cual es clave para definir la forma del orbital.', multi: 'OFF', maxSelect: 1 },
+           { question: 'La estructura electrónica 1s<sup>2</sup>, 2s<sup>2</sup>, 2p<sup>6</sup>, 3s<sup>2</sup>, 3p<sup>5</sup> demuestra que el elemento:', options: ['Tiene 11 electrones', 'Tiene 2 electrones en el segundo nivel', 'Tiene dos electrones en el tercer nivel', 'Tiene 17 electrones'], answer: 'Tiene 17 electrones', explanation: 'Cada orbital contiene un número máximo de electrones. En el caso del orbital s: 2 electrones, del orbital p: 6 electrones. La suma de todos nos da el total de electrones que contiene un átomo, en este caso: 2+2+6+2+5 = 17 electrones.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Qué representa el número cuántico magnético (ml)?', options: ['El nivel de energía del electrón', 'La forma del orbital', 'La orientación espacial del orbital', 'El spin del electrón'], answer: 'La orientación espacial del orbital', explanation: 'El número cuántico magnético (ml) describe la orientación espacial del orbital donde se encuentra un electrón dentro de un subnivel.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Para un subnivel d, ¿cuál es el rango de valores que puede tomar el número cuántico magnético (ml)?', options: ['-1 a +1', '-2 a +2', '-3 a +3', '-2 a +2 y 0'], answer: '-2 a +2', explanation: 'Para un subnivel d, el rango de valores que puede tomar el número cuántico magnético (ml) es desde −2 hasta +2, lo cual determina las diferentes orientaciones posibles.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Qué número cuántico describe la dirección del giro de un electrón?', options: ['Número cuántico principal (n)', 'Número cuántico azimutal (l)', 'Número cuántico magnético (ml)', 'Número cuántico de spin (ms)'], answer: 'Número cuántico de spin (ms)', explanation: 'El número cuántico que describe la dirección del giro de un electrón es el número cuántico de spin (ms), fundamental para entender su comportamiento magnético.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Qué valor puede tomar el número cuántico de spin (ms)?', options: ['0 o 1', '+1/2 o -1/2', 'Solo 1', 'Solo -1'], answer: '+1/2 o -1/2', explanation: 'El número cuántico de spin (ms) puede tomar valores de +1/2 o −1/2, indicando la dirección del giro del electrón.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Cuál es la configuración electrónica del oxígeno (O Z:8)?', options: ['1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>4</sup>', '1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>6</sup>', '1s<sup>2</sup> 2s<sup>1</sup> 2p<sup>5</sup>', '1s<sup>2</sup> 3s<sup>2</sup> 3p<sup>4</sup>'], answer: '1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>4</sup>', explanation: 'La configuración electrónica del oxígeno es 1s<sup>2</sup>2s<sup>2</sup>2p<sup>4</sup>, reflejando cómo están distribuidos sus electrones en los niveles y subniveles energéticos.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Cuántos electrones puede albergar un subnivel p?', options: ['6', '8', '10', '14'], answer: '6', explanation: 'Un subnivel p puede albergar hasta seis electrones, lo cual es crucial para entender la capacidad máxima de los orbitales p.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Qué tipo de orbital tiene forma esférica?', options: ['s', 'p', 'd', 'f'], answer: 's', explanation: 'Los orbitales con forma esférica corresponden al tipo s, lo cual afecta cómo interactúan los electrones dentro del átomo.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Si un átomo tiene un número cuántico principal n = 3 y azimutal l = 0, ¿qué tipo de subnivel tiene?', options: ['s', 'p', 'd', 'f'], answer: 's', explanation: 'Un número cuántico principal n=3 y azimutal l=0 indican que estamos tratando con un subnivel s, determinando su forma y propiedades.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Cuál es el número máximo de electrones que pueden ocupar los subniveles d en un nivel dado?', options: ['10', '6', '14', '18'], answer: '10', explanation: 'En un subnivel d, el número máximo de electrones que pueden ocuparlo es diez, lo cual es esencial para comprender la química de transición.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Qué establece el principio de exclusión de Pauli?', options: ['Dos electrones no pueden tener los mismos cuatro números cuánticos en un átomo.', 'Los electrones deben ocupar orbitales vacíos antes de emparejarse.', 'Los electrones se comportan como ondas.', 'Los electrones giran en órbitas definidas.'], answer: 'Dos electrones no pueden tener los mismos cuatro números cuánticos en un átomo.', explanation: 'El principio de exclusión de Pauli establece que dos electrones no pueden tener los mismos cuatro números cuánticos en un átomo, regulando cómo se distribuyen los electrones.', multi: 'OFF', maxSelect: 1 },
+           { question: 'En la configuración electrónica, ¿qué significa que un orbital esté "completo"?', options: ['Tiene su capacidad máxima de electrones ocupada.', 'No contiene electrones.', 'Tiene solo electrones con spin positivo.', 'Está en el estado más bajo de energía posible.'], answer: 'Tiene su capacidad máxima de electrones ocupada.', explanation: 'Un orbital "completo" significa que tiene su capacidad máxima ocupada por electrones, lo cual afecta las propiedades químicas del elemento.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Cuál es la configuración electrónica del hierro (Fe Z=26)?', options: ['[Ar]4s<sup>2</sup>3d<sup>6</sup>', '[Kr]5s<sup>2</sup>4d<sup>6</sup>', '[Ar]3d<sup>8</sup>4s<sup>0</sup>', '[Ar]4s<sup>0</sup>3d<sup>6</sup>'], answer: '[Ar]4s<sup>2</sup>3d<sup>6</sup>', explanation: 'La configuración electrónica del hierro (Fe) es [Ar]4s<sup>2</sup>3d<sup>6</sup>, mostrando cómo están distribuidos sus electrones en niveles energéticos específicos.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Determine los números cuánticos de un electrón en el subnivel, cuya configuración electrónica es 5d<sup>5</sup>.', options: ['(5, 2, 2, +1/2)', '(5, 2, 2, -1/2)', '(5, 2, 1, +1/2)', '(5, 2, 1, +1/2)'], answer: '(5, 2, 2, +1/2)', explanation: '<br> <img src="https://i.postimg.cc/kgKXSJ1v/Captura-de-pantalla-2026-11-05-115425.png" alt="Descripción de la imagen" width="550" height="400">.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Cuando un electrón se mueve a un nivel energético más alto, este proceso se llama:', options: ['Ionización', 'Excitación', 'Emisión', 'Absorción'], answer: 'Excitación', explanation: 'Cuando un electrón se mueve a un nivel energético más alto, este proceso se denomina excitación, reflejando cambios en su energía potencial.', multi: 'OFF', maxSelect: 1 },
+           { question: 'En la regla de Hund, se establece que:', options: ['Los electrones deben emparejarse en orbitales ocupados antes de llenar los vacíos.', 'Los electrones ocuparán todos los orbitales disponibles antes de emparejarse en uno solo.', 'No puede haber dos electrones en un mismo orbital con el mismo spin.', 'Todos los orbitales deben estar llenos antes que uno nuevo sea ocupado.'], answer: 'Los electrones ocuparán todos los orbitales disponibles antes de emparejarse en uno solo.', explanation: 'En la regla de Hund, se establece que los electrones ocuparán todos los orbitales disponibles antes de emparejarse en uno solo, optimizando la estabilidad energética.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Qué números cuánticos no es posible que existan?', options: ['(3, 3, 2, +1/2)', '(3, 2, 2, -1/2)', '(3, 2, 1, +1/2)', '(3, 2, 1, -1/2)'], answer: '(3, 3, 2, +1/2)', explanation: 'El número cuántico secundario (l) puede tener valores de 0 hasta n-1. Dado que n=3, l solo puede tomar valores menores a 3, no igual o mayor.', multi: 'OFF', maxSelect: 1 },
+        ];
+
+        // Práctica 20 preguntas
+        const quizDataExtra = [
+           { question: 'Un átomo con una configuración electrónica terminando en d<sup>4</sup> o d<sup>9</sup> es considerado:', options: ['Estable', 'Inestable', 'Neutro', 'Iónico'], answer: 'Inestable', explanation: 'Un átomo con una configuración electrónica terminando en d<sup>4</sup> o d<sup>9</sup> es considerado inestable debido a su tendencia a reorganizarse para alcanzar una mayor estabilidad energética.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Qué elemento presenta el siguiente estado cuántico para su último electrón? (2,1,0,-1/2). (O=8, N=7, F=9, P=15)', options: ['Oxígeno', 'Nitrógeno', 'Fluor', 'Fósforo'], answer: 'Fluor', explanation: 'A partir de los números cuánticos se puede determinar la configuración electrónica del elemento. <br> (2, 1, 0, -1/2). <br> <img src="https://i.postimg.cc/nctHJbcS/Captura-de-pantalla-2026-11-05-115843.png" alt="Descripción de la imagen" width="550" height="300">', multi: 'OFF', maxSelect: 1 },
+           { question: '¿La notación [Ne] representa:', options: ['La configuración electrónica completa del neón', 'La configuración electrónica simplificada hasta el neón', 'El estado excitado del neón', 'La masa atómica del neón.'], answer: 'La configuración electrónica simplificada hasta el neón', explanation: 'La notación [Ne] representa la configuración electrónica simplificada hasta el neón, permitiendo una representación más compacta y comprensible.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Si el número atómico del nitrógeno es Z=7, ¿Cuál es su configuración electrónica?', options: ['1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>3</sup>', '1s<sup>1</sup> 2s<sup>2</sup> 2p<sup>4</sup>', '1p<sup>2</sup> 2s<sup>2</sup> 2p<sup>2</sup>', '1p<sup>2</sup> 2p<sup>2</sup> 2s<sup>3</sup>'], answer: '1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>3</sup>', explanation: 'Siguiendo la configuración electrónica se obtiene 1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>3</sup>, ya que sumando los electrones de cada orbital da Z=7 que corresponde al nitrógeno.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Cuál es la relación entre los números cuánticos principal y azimutal?', options: ['El valor de l siempre es mayor que n', 'l puede ser igual a n-1', 'l no puede ser mayor que n', 'Ambos siempre son iguales'], answer: 'l no puede ser mayor que n', explanation: 'La relación entre los números cuánticos principal (n) y azimutal (l) establece que l no puede ser mayor que n−1, limitando las formas posibles de los orbitales.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Si el número cuántico principal es n=4 y l=3, esto indica que estamos tratando con:', options: ['Un orbital s', 'Un orbital p', 'Un orbital d', 'Un orbital f'], answer: 'Un orbital f', explanation: 'Con n=4 y l=3, estamos tratando con un orbital f, lo cual tiene implicaciones importantes para la química de elementos pesados.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿El hecho que dos electrones no pueden tener los mismos cuatro números cuánticos se conoce como?', options: ['Regla de Hund', 'Principio de exclusión de Pauli', 'Teorema de Heisenberg', 'Ley Coulomb'], answer: 'Principio de exclusión de Pauli', explanation: 'El principio de exclusión de Pauli prohíbe que dos electrones tengan los mismos cuatro números cuánticos dentro de un átomo, regulando sus configuraciones posibles.', multi: 'OFF', maxSelect: 1 },
+           { question: 'El número máximo de electrones que puede tener un orbital f es:', options: ['10 electrones', '14 electrones', '6 electrones', '2 electrones'], answer: '14 electrones', explanation: 'El orbital f tiene un número cuántico secundario l=3 y el número cuántico magnético puede tomar los valores −3,−2,−1,0,+1,+2,+3 lo que da un total de 7 orientaciones posibles. Cada orbital puede contener hasta 2 electrones, por lo tanto el número máximo es 14.', multi: 'OFF', maxSelect: 1 },
+           { question: 'La configuración electrónica fundamental se obtiene, en la práctica, a partir de tres reglas o principios que son:', options: ['Regla de la construcción, principio de exclusión de Pauli y regla de la máxima multiplicidad de Hund', 'Dualidad del electrón, número de masa y número másico', 'Principio de Broglie, poca multiplicidad de Heisenberg y teoría de la relatividad', 'Teoría de la ondícula, agujeros negros y teoría de Elsiever'], answer: 'Regla de la construcción, principio de exclusión de Pauli y regla de la máxima multiplicidad de Hund', explanation: 'La regla de la construcción (Aufbau) establece que los electrones ocupan los orbitales en orden de menor a mayor energía; el Principio de exclusión de Pauli, que dice que no puede haber dos electrones con los mismos cuatro números cuánticos en un átomo; y la Regla de la máxima multiplicidad de Hund, que indica que los electrones se distribuyen en los orbitales.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Un átomo con una carga neta positiva se denomina:', options: ['Ión negativo', 'Ion positivo', 'Átomo neutro', 'Isótopo'], answer: 'Ion positivo', explanation: 'Un átomo con carga neta positiva se denomina ion positivo o catión, resultante de la pérdida de uno o más electrones.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Si un electrón tiene ms = +1/2, esto indica que:', options: ['Se encuentra en un estado excitado', 'Su spin está orientado hacia arriba', 'Tiene una órbita circular', 'Tiene carga negativa'], answer: 'Su spin está orientado hacia arriba', explanation: 'Si un electrón tiene ms=+1/2, esto indica que su spin está orientado hacia arriba, lo cual es relevante para determinar sus propiedades magnéticas.', multi: 'OFF', maxSelect: 1 },
+           { question: 'En una configuración electrónica completa, cada subnivel debe ser llenado según:', options: ['Principio de exclusión', 'Regla del octeto', 'Principio de Aufbau', 'Teorema energético'], answer: 'Principio de Aufbau', explanation: 'En una configuración electrónica completa, cada subnivel debe ser llenado según el principio de Aufbau, asegurando que los electrones ocupen primero los niveles más bajos disponibles.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Si el número cuántico principal es n=3, l=1, esto indica que estamos tratando con:', options: ['Un subnivel s', 'Un subnivel p', 'Un subnivel d', 'Un subnivel f'], answer: 'Un subnivel p', explanation: 'Si n=3 y l=1, estamos tratando con un subnivel p, caracterizando así sus propiedades y comportamiento dentro del átomo.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Si un átomo tiene Z=15 y su masa atómica es aproximadamente 31, ¿cuál es su número aproximado de neutrones?', options: ['15', '16', '31', '46'], answer: '16', explanation: 'Para un átomo con Z=15 (fósforo) y masa atómica aproximadamente igual a 31, podemos calcular su número aproximado de neutrones restando Z a la masa atómica: 31-15=16.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Determine el número atómico de cierto elemento, si se conoce que el estado cuántico del último electrón es (4,1,1,-1/2)', options: ['47', '45', '46', '49'], answer: '49', explanation: '<br> <img src="https://i.postimg.cc/cHHvfq8t/Captura-de-pantalla-2026-11-05-120550.png" alt="Descripción de la imagen" width="550" height="400">.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Sobre la siguiente configuración electrónica, 1s<sup>2</sup>, 2s<sup>2</sup>, 3p<sup>3</sup>, ¿cuál es el número de protones que tiene el átomo?', options: ['6 protones', '7 protones', '13 protones', 'No se identifica el valor'], answer: '7 protones', explanation: 'Al sumar los electrones de cada orbital dan 2+2+3 = 7 electrones (e-) = número atómico (Z) = protones (p+). Por ende hay 7 protones.', multi: 'OFF', maxSelect: 1 },
+           { question: 'De las siguientes distribuciones de electrones en diagrama de orbitales, ¿cuál está organizada correctamente?', options: ['1s(↑↓) 2s(↑↓) 2p(↑↓)(  )(  )', '1s(↑↓) 2s(↑↓) 2p(↓ )(↑ )(↑ )', '1s(↑↓) 2s(↑↓) 2p(↑↓)(↑↑)(↑ )', '1s(↑↓) 2s(↑↓) 2p(↑↓)(↑ )(↑ )'], answer: '1s(↑↓) 2s(↑↓) 2p(↑↓)(↑ )(↑ )', explanation: 'La opción correcta es la d, ya que cumple con las reglas: <br> - Los electrones ocupan los orbitales en orden de menor a mayor energía (Aufbau), con un máximo de dos por orbital y espines opuestos (Pauli), y distribuyéndose de manera uniforme en orbitales disponibles antes de emparejarse (Hund).', multi: 'OFF', maxSelect: 1 },
+           { question: 'Los subniveles dentro del nivel principal n=3 son:', options: ['s, p, d', 's, p ', 's, p, d, f', 'Solo p'], answer: 's, p, d', explanation: 'Dentro del nivel principal n=3 existen subniveles s, p y d, cada uno con diferentes capacidades para albergar electrones.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Un elemento tiene una masa atómica de 27 uma y 14 neutrones. ¿Cuál sería su configuración electrónica?', options: ['1s<sup>2</sup>, 2s<sup>2</sup>, 2p<sup>6</sup>, 3s<sup>2</sup>, 3p<sup>2</sup>', '1s<sup>2</sup>, 2s<sup>2</sup>, 2p<sup>6</sup>, 3s<sup>2</sup>, 3p<sup>6</sup>', '1s<sup>2</sup>, 2s<sup>2</sup>, 2p<sup>5</sup>, 3s<sup>3</sup>, 3p<sup>1</sup>', '1s<sup>2</sup>, 2s<sup>2</sup>, 2p<sup>6</sup>, 3s<sup>2</sup>, 3p<sup>1</sup>'], answer: '1s<sup>2</sup>, 2s<sup>2</sup>, 2p<sup>6</sup>, 3s<sup>2</sup>, 3p<sup>1</sup>', explanation: 'Para calcular el número de electrones del Al debemos determinar el Z. <br> A = n + Z <br> Z = A - n <br> Z = 27 - 14 = 13 <br> Considerando que Z = (p+) = (e-) tenemos que e- = 13 <br> La configuración electrónica para distribuir los 13e- sería 1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>2</sup> 3p<sup>1</sup>.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Qué distribución electrónica le permiten al Cu (Z=29) ser más estable?', options: ['[Ar] 4s<sup>2</sup>, 3d<sup>9</sup>', '[Ar] 4s<sup>2</sup>, 3d<sup>10</sup>', '[Ar] 4s<sup>1</sup>, 3d<sup>10</sup>', '[Ar] 4s<sup>2</sup>, 3d<sup>2</sup>'], answer: '[Ar] 4s<sup>1</sup>, 3d<sup>10</sup>', explanation: 'Una configuración electrónica no puede terminar en un subnivel d<sup>4</sup> o d<sup>9</sup> porque sería inestable, por lo que se debería pasar a d<sup>5</sup> o d<sup>10</sup> que son más estables. En el cobre ocurre la promoción: [Ar] 4s<sup>1</sup> 3d<sup>10</sup>.', multi: 'OFF', maxSelect: 1 },
+        ];
+
+        // EVALUACIÓN 16 preguntas
+        const quizDataEvaluacion = [
+            { question: '¿Cuál de las siguientes configuraciones representa un átomo en estado excitado?', options: ['1s<sup>2</sup>,2s<sup>2</sup>,2p<sup>5</sup>, 3s<sup>1</sup>', '1s<sup>2</sup>,2s<sup>2</sup>,2p<sup>6</sup>, 3s<sup>1</sup>', '1s<sup>2</sup>,2s<sup>2</sup>,2p<sup>6</sup>', '1s<sup>2</sup>,2s<sup>2</sup>,2p<sup>6</sup>, 3s<sup>2</sup>'], answer: '1s<sup>2</sup>,2s<sup>2</sup>,2p<sup>5</sup>, 3s<sup>1</sup>', explanation: '<br> <img src="https://i.postimg.cc/D0hpZcN4/Captura-de-pantalla-2026-11-05-123643.png" alt="Descripción de la imagen" width="550" height="400">.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Seleccione la opción correcta que contiene a la especie química que representa la siguiente configuración electrónica: <br> 1s<sup>2</sup>,2s<sup>2</sup>,2p<sup>6</sup>, 3s<sup>2</sup>, 3p<sup>6</sup>, 4s<sup>2</sup>, 3d<sup>10</sup>, 4p<sup>3</sup>', options: ['Zn<sup>+2</sup>', 'Ge<sup>+</sup>', 'Se<sup>-2</sup>', 'Br<sup>+2</sup>'], answer: 'Br<sup>+2</sup>', explanation: '<br> <img src="https://i.postimg.cc/mZ0CQDZF/Captura-de-pantalla-2026-11-05-124447.png" alt="Descripción de la imagen" width="580" height="400">.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuántos electrones puede albergar como máximo un subnivel definido por los números cuánticos n=3 y l=2?', options: ['6', '8', '10', '14'], answer: '10', explanation: '<br> <img src="https://i.postimg.cc/FK7HWyDh/Captura-de-pantalla-2026-11-05-124725.png" alt="Descripción de la imagen" width="680" height="400">.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Determine el conjunto de números cuánticos para el último electrón de un átomo con 35 protones, 45 neutrones y 35 electrones.', options: ['(4,1,+1,+1/2)', '(3,2,-1,-1/2)', '(4,0,0,+1/2)', '(4,1,0,-1/2)'], answer: '(4,1,0,-1/2)', explanation: '<br> <img src="https://i.postimg.cc/3RYbrBV4/Captura-de-pantalla-2026-11-05-125223.png" alt="Descripción de la imagen" width="680" height="280">.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Si el número cuántico principal es n=4 y el número cuántico secundario es l=3, ¿a qué tipo de subnivel u orbital corresponde esta combinación?', options: ['Subnivel / Orbital s', 'Subnivel / Orbital p ', 'Subnivel / Orbital d', 'Subnivel / Orbital f'], answer: 'Subnivel / Orbital f', explanation: 'Relación entre el número cuántico azimutal (l) y el tipo de subnivel: n=4 indica que los electrones se encuentran en el cuarto nivel de energía. l=3 especifica el tipo de subnivel: l=0 → s, l=1 → p, l=2 → d, l=3 → f. Por lo tanto, la combinación (n=4, l=3) identifica al subnivel 4f.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las siguientes configuraciones no cumple con el principio de exclusión de Pauli?', options: ['1s<sup>2</sup>:↑↑ 2s<sup>2</sup>:↑↓', '1s<sup>2</sup>:↑↓ 2s<sup>2</sup>:↑↓', '1s<sup>2</sup>:↑↓ 2s<sup>2</sup>:↑↓ 2p<sup>1</sup>:↑', '1s<sup>1</sup>:↑'], answer: '1s<sup>2</sup>:↑↑ 2s<sup>2</sup>:↑↓', explanation: '<br> <img src="https://i.postimg.cc/ncK8xXCg/Captura-de-pantalla-2026-11-05-131236.png" alt="Descripción de la imagen" width="680" height="280">.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Qué número cuántico describe la orientación espacial del orbital atómico?', options: ['Número cuántico principal', 'Número cuántico azimutal', 'Número cuántico magnético', 'Número cuántico espín'], answer: 'Número cuántico magnético', explanation: '<br> <img src="https://i.postimg.cc/tJHrvzdw/Captura-de-pantalla-2026-11-05-131436.png" alt="Descripción de la imagen" width="680" height="380">.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Los materiales ferromagnéticos como el hierro (Fe) son aquellos cuyos átomos poseen electrones desapareados que pueden alinearse en dominios magnéticos. ¿Cuántos electrones desapareados tiene el átomo de hierro que contribuyen a su magnetismo, considerando que su número atómico es Z=26?', options: ['1', '2', '3', '4'], answer: '4', explanation: '<br> <img src="https://i.postimg.cc/SNgrc4PD/Captura-de-pantalla-2026-11-05-131556.png" alt="Descripción de la imagen" width="380" height="100">.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de los siguientes conjuntos de números cuánticos (n,l,m<sub>l</sub>,m<sub>s</sub>) representa una combinación físicamente válida para un electrón en la envoltura atómica?', options: ['(2,2,0,+1/2)', '(3,1,−2,−1/2)', '(4,2,−1,−1/2)', '(1,0,0,+1)'], answer: '(4,2,−1,−1/2)', explanation: '<br> <img src="https://i.postimg.cc/Wz3DvB7H/Captura-de-pantalla-2026-11-05-131852.png" alt="Descripción de la imagen" width="480" height="200">.', multi: 'OFF', maxSelect: 1 },
+            { question: 'La configuración electrónica real del cromo (Cr, Z=24) es [Ar] 4s<sup>1</sup> 3d<sup>5</sup> y no la esperada [Ar] 4s<sup>2</sup> 3d<sup>4</sup>. Esta anomalía se debe a la estabilidad extra de un subnivel d semilleno. Si el último electrón del cromo ingresa como el quinto electrón en el subnivel 3d, ¿cuál es el valor de su número cuántico de espín (m<sub>s</sub>) esperado para maximizar la estabilidad según la regla de Hund?', options: ['Solo -1/2', 'Solo +1/2', '+1 o -1', '+1/2 y -1/2'], answer: 'Solo +1/2', explanation: '<br> <img src="https://i.postimg.cc/PfgLcRwM/Captura-de-pantalla-2026-11-05-132332.png" alt="Descripción de la imagen" width="650" height="300">.', multi: 'OFF', maxSelect: 1 },
+            { question: 'El número cuántico magnético (m<sub>l</sub>) indica la orientación espacial de los orbitales atómicos. Si un químico está describiendo un electrón en el subnivel 5f, ¿cuántos valores posibles puede tomar el número cuántico m<sub>l</sub> para este subnivel?', options: ['3', '5', '7', '9'], answer: '7', explanation: '<br> <img src="https://i.postimg.cc/3rmryJkJ/Captura-de-pantalla-2026-11-05-132621.png" alt="Descripción de la imagen" width="650" height="350">.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Si un elemento X posee 3 electrones de valencia y se ubica en el período 4 de la tabla periódica, ¿cuál es su configuración electrónica abreviada (Kernel)?', options: ['[Ar] 4s<sup>2</sup> 3d<sup>10</sup> 4p<sup>1</sup>', '[Ne] 3s<sup>2</sup>, 3p<sup>1</sup>', '[Ar] 4s<sup>2</sup>, 4p<sup>1</sup>', '[Kr] 5s<sup>2</sup>, 5p<sup>1</sup>'], answer: '[Ar] 4s<sup>2</sup> 3d<sup>10</sup> 4p<sup>1</sup>', explanation: '<br> <img src="https://i.postimg.cc/qqh3nfCC/Captura-de-pantalla-2026-11-05-133340.png" alt="Descripción de la imagen" width="650" height="350">.', multi: 'OFF', maxSelect: 1 },
+            { question: 'En una reacción química, el azufre (Z=16) reacciona con un metal para formar un compuesto iónico. Para alcanzar la configuración estable de octeto, forma el anión sulfuro (S<sup>2-</sup>) con configuración [Ne] 3s<sup>2</sup> 3p<sup>6</sup>. ¿Cuál de los siguientes iones es isoelectrónico con el ion S<sup>2-</sup>?', options: ['Mg<sup>2+</sup> (Z=12)', 'Na<sup>+</sup> (Z=11)', 'Cl<sup>-</sup> (Z=17)', 'Se<sup>2-</sup> (Z=34)'], answer: 'Cl<sup>-</sup> (Z=17)', explanation: '<br> <img src="https://i.postimg.cc/pdjLMDnP/Captura-de-pantalla-2026-11-05-134159.png" alt="Descripción de la imagen" width="650" height="350">.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Si un electrón se encuentra en el subnivel 3s, ¿cuáles son los posibles valores que puede tomar su número cuántico magnético (m<sub>l</sub>)?', options: ['-1, 0, +1', '-2,-1,0,+1,+2', '0', '1'], answer: '0', explanation: '<br> <img src="https://i.postimg.cc/pLFHmPVQ/Captura-de-pantalla-2026-11-05-134411.png" alt="Descripción de la imagen" width="680" height="280">.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Un compuesto de cromo (III) exhibe un color rojo, mientras que uno de cobre (II) se muestra azul debido a que los electrones d absorben energía al realizar transiciones entre orbitales d. Este fenómeno ocurre entre orbitales que comparten el mismo nivel (n) y subnivel (l), pero difieren en su orientación espacial. ¿Qué número cuántico distingue la orientación espacial de estos orbitales?', options: ['Número cuántico principal (n)', 'Número cuántico magnético (m<sub>l</sub>)', 'Número cuántico azimutal (l)', 'Número cuántico de espín (m<sub>s</sub>)'], answer: 'Número cuántico magnético (m<sub>l</sub>)', explanation: '<br> <img src="https://i.postimg.cc/85nKdrtc/Captura-de-pantalla-2026-11-05-134714.png" alt="Descripción de la imagen" width="600" height="400">.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál es el valor del número cuántico azimutal (l) para el subnivel donde se encuentra el último electrón del átomo de cloro (Cl), considerando que su número atómico es Z=17?', options: ['0', '1', '2', '3'], answer: '1', explanation: '<br> <img src="https://i.postimg.cc/L51cnT21/Captura-de-pantalla-2026-11-05-134912.png" alt="Descripción de la imagen" width="400" height="400">.', multi: 'OFF', maxSelect: 1 },
+        ];
+
+        // ========== CONFIGURACIÓN DEL TEMPORIZADOR DE EVALUACIÓN ==========
+        const EVAL_TIMER_SECONDS = 960; // 16 minutos
+
+        const EVAL_TIMER_PHASES = [
+            { minSeconds: 480, colorClass: 'text-emerald-600 bg-emerald-50 border-emerald-300' },
+            { minSeconds: 60,  colorClass: 'text-amber-600 bg-amber-50 border-amber-300' },
+            { minSeconds: 0,   colorClass: 'text-red-600 bg-red-50 border-red-300' }
+        ];
+        // ==================================================================
+
+        let state = {
+            currentMode: 'deber',
+            view: 'quiz_home',
+            studentName: '',
+            studentEmail: '',
+            activeQuestions: [],
+            currentQuestion: 0,
+            score: 0,
+            selectedAnswer: null,
+            isAnswerCorrect: null,
+            emailStatus: null,
+            emailAnalysis: null,
+            emailAnalysisMsg: '',
+            timeLeft: 0
+        };
+
+        let timerInterval = null;
+
+        const disposableDomains = [
+            'tempmail.com','temp-mail.org','guerrillamail.com','10minutemail.com','mailinator.com',
+            'yopmail.com','throwawaymail.com','fakeinbox.com','trashmail.com','getnada.com',
+            'maildrop.cc','dispostable.com','sharklasers.com','guerrillamailblock.com'
+        ];
+        const trustedProviders = [
+            'gmail.com','googlemail.com','hotmail.com','hotmail.es','hotmail.co.uk','outlook.com',
+            'outlook.es','live.com','msn.com','yahoo.com','yahoo.es','icloud.com','me.com',
+            'protonmail.com','proton.me','aol.com','zoho.com','gmx.com','mail.com'
+        ];
+
+        function isValidEmailFormat(email) {
+            const re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+            return re.test(email) && email.length <= 254 && !email.includes('..') && !email.startsWith('.') && !email.endsWith('.');
+        }
+
+        function analyzeEmail(email) {
+            const lower = email.toLowerCase().trim();
+            if (!lower) return { valid: false, msg: 'Escribe un correo electrónico.' };
+            if (!isValidEmailFormat(lower)) return { valid: false, msg: 'Formato inválido. Revisa que tenga @ y un dominio correcto.' };
+            const domain = lower.split('@')[1];
+            if (!domain || domain.length < 3) return { valid: false, msg: 'Dominio incompleto o inválido.' };
+            if (disposableDomains.some(d => domain === d || domain.endsWith('.' + d))) {
+                return { valid: false, msg: 'Correo temporal / desechable detectado. Usa un correo real.' };
+            }
+            const isTrusted = trustedProviders.some(p => domain === p);
+            const hasGoodTld = /\.(com|es|net|org|edu|gov|mx|ar|co|uk|de|fr|it|pt|br|cl)$/i.test(domain);
+            if (!hasGoodTld && !isTrusted) {
+                return { valid: false, msg: 'Dominio poco común o sospechoso. Usa Gmail, Hotmail/Outlook, Yahoo, etc.' };
+            }
+            let analysisText = '';
+            if (domain.includes('hotmail') || domain.includes('outlook') || domain.includes('live.com') || domain.includes('msn.com')) {
+                analysisText = 'Análisis: proveedor Microsoft (Hotmail/Outlook) detectado · formato correcto · dominio legítimo';
+            } else if (domain.includes('gmail') || domain.includes('googlemail')) {
+                analysisText = 'Análisis: proveedor Google (Gmail) detectado · formato correcto · dominio legítimo';
+            } else if (isTrusted) {
+                analysisText = 'Análisis: proveedor conocido · formato correcto · dominio legítimo';
+            } else {
+                analysisText = 'Análisis: formato válido · dominio con TLD estándar · no se detectaron patrones de correo temporal';
+            }
+            return { valid: true, msg: analysisText };
+        }
+
+        function showSection(section, btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            stopTimer();
+            const app = document.getElementById('app');
+            if (section === 'pdf') {
+                app.innerHTML = `<div class="animate-fade-in"><h2 class="text-xl font-bold mb-4">📄 Pizarra Virtual</h2><div class="iframe-container"><iframe src="${DRIVE_PDF_URL}" width="100%" height="100%" allow="autoplay"></iframe></div></div>`;
+            } else if (section === 'video') {
+                app.innerHTML = `<div class="animate-fade-in"><h2 class="text-xl font-bold mb-4">🎥 Video Clase</h2><div class="iframe-container"><iframe src="${DRIVE_VIDEO_URL}" width="100%" height="100%" allow="autoplay"></iframe></div></div>`;
+            }
+        }
+
+        function prepQuiz(mode, btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            stopTimer();
+            state = {
+                currentMode: mode,
+                view: 'quiz_home',
+                studentName: '',
+                studentEmail: '',
+                activeQuestions: [],
+                currentQuestion: 0,
+                score: 0,
+                selectedAnswer: null,
+                isAnswerCorrect: null,
+                emailStatus: null,
+                emailAnalysis: null,
+                emailAnalysisMsg: '',
+                timeLeft: 0
+            };
+            render();
+        }
+
+        function startQuiz() {
+            if (state.currentMode === 'deber') {
+                state.activeQuestions = [...quizData];
+            } else if (state.currentMode === 'evaluacion') {
+                state.activeQuestions = [...quizData]
+                    .sort(() => 0.5 - Math.random())
+                    .slice(0, 10);
+            } else if (state.currentMode === 'extra') {
+                state.activeQuestions = [...quizDataExtra];
+            } else if (state.currentMode === 'evaluacion_final') {
+                state.activeQuestions = [...quizDataEvaluacion];
+            }
+            state.view = 'name_input';
+            state.emailAnalysis = null;
+            state.emailAnalysisMsg = '';
+            render();
+        }
+
+        function onEmailInput() {
+            const e = document.getElementById('email-in');
+            if (!e) return;
+            const val = e.value.trim();
+            if (val.length < 5) {
+                state.emailAnalysis = null;
+                state.emailAnalysisMsg = '';
+                updateEmailUI();
+                return;
+            }
+            state.emailAnalysis = 'checking';
+            state.emailAnalysisMsg = 'Analizando correo…';
+            updateEmailUI();
+            clearTimeout(window._emailCheckTimer);
+            window._emailCheckTimer = setTimeout(() => {
+                const result = analyzeEmail(val);
+                state.emailAnalysis = result.valid ? 'valid' : 'invalid';
+                state.emailAnalysisMsg = result.msg;
+                updateEmailUI();
+            }, 600);
+        }
+
+        function updateEmailUI() {
+            const feedback = document.getElementById('email-feedback');
+            const analysis = document.getElementById('email-analysis');
+            const input = document.getElementById('email-in');
+            if (!feedback || !analysis || !input) return;
+            if (state.emailAnalysis === 'checking') {
+                feedback.innerHTML = `<span class="text-slate-500 text-sm flex items-center gap-2"><span class="dot-pulse">●</span> Verificando…</span>`;
+                analysis.innerHTML = `<p class="text-xs text-slate-400 mt-1">${state.emailAnalysisMsg}</p>`;
+                input.classList.remove('border-red-400', 'border-emerald-400');
+                input.classList.add('border-slate-300');
+            } else if (state.emailAnalysis === 'invalid') {
+                feedback.innerHTML = `<span class="text-red-600 text-sm font-semibold">✗ Correo no válido o inexistente</span>`;
+                analysis.innerHTML = `<p class="text-xs text-red-500/80 mt-1">${state.emailAnalysisMsg}</p>`;
+                input.classList.remove('border-emerald-400', 'border-slate-300');
+                input.classList.add('border-red-400');
+            } else if (state.emailAnalysis === 'valid') {
+                feedback.innerHTML = `<span class="text-emerald-600 text-sm font-semibold">✓ Correo aceptado</span>`;
+                analysis.innerHTML = `<p class="text-xs text-emerald-600/80 mt-1">${state.emailAnalysisMsg}</p>`;
+                input.classList.remove('border-red-400', 'border-slate-300');
+                input.classList.add('border-emerald-400');
+            } else {
+                feedback.innerHTML = '';
+                analysis.innerHTML = '';
+                input.classList.remove('border-red-400', 'border-emerald-400');
+                input.classList.add('border-slate-300');
+            }
+        }
+
+        function validaDatos() {
+            const n = document.getElementById('name-in').value.trim();
+            const e = document.getElementById('email-in').value.trim();
+            if (n.length <= 2) {
+                alert("Ingresa nombre completo (mínimo 3 caracteres).");
+                return;
+            }
+            const result = analyzeEmail(e);
+            state.emailAnalysis = result.valid ? 'valid' : 'invalid';
+            state.emailAnalysisMsg = result.msg;
+            updateEmailUI();
+            if (!result.valid) return;
+            state.studentName = n;
+            state.studentEmail = e;
+            state.view = 'playing';
+            if (state.currentMode === 'evaluacion_final') {
+                startTimer();
+            }
+            render();
+        }
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function getTimerPhaseClass(remaining) {
+            for (const phase of EVAL_TIMER_PHASES) {
+                if (remaining >= phase.minSeconds) {
+                    return phase.colorClass;
+                }
+            }
+            return EVAL_TIMER_PHASES[EVAL_TIMER_PHASES.length - 1].colorClass;
+        }
+
+        function startTimer() {
+            stopTimer();
+            state.timeLeft = EVAL_TIMER_SECONDS;
+            timerInterval = setInterval(() => {
+                state.timeLeft--;
+                if (state.timeLeft <= 0) {
+                    state.timeLeft = 0;
+                    stopTimer();
+                    state.view = 'results';
+                    render();
+                    enviarCorreo();
+                    return;
+                }
+                const timerEl = document.getElementById('eval-timer');
+                if (timerEl) {
+                    timerEl.textContent = formatTime(state.timeLeft);
+                    timerEl.className = `px-3 py-1.5 rounded-xl border-2 font-black text-sm tabular-nums ${getTimerPhaseClass(state.timeLeft)}`;
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        function isMultiQuestion(q) {
+            return q.multi === 'ON';
+        }
+
+        function arraysEqual(a, b) {
+            if (!Array.isArray(a) || !Array.isArray(b)) return false;
+            if (a.length !== b.length) return false;
+            const sa = [...a].sort();
+            const sb = [...b].sort();
+            return sa.every((v, i) => v === sb[i]);
+        }
+
+        function handleAnswer(idx) {
+            if (state.isAnswerCorrect !== null) return;
+            const currentQ = state.activeQuestions[state.currentQuestion];
+            const option = currentQ.options[idx];
+
+            if (isMultiQuestion(currentQ)) {
+                let selected = Array.isArray(state.selectedAnswer) ? [...state.selectedAnswer] : [];
+                const pos = selected.indexOf(option);
+                if (pos > -1) {
+                    selected.splice(pos, 1);
+                } else {
+                    if (selected.length >= currentQ.maxSelect) return;
+                    selected.push(option);
+                }
+                state.selectedAnswer = selected;
+                render();
+            } else {
+                if (state.selectedAnswer !== null) return;
+                state.selectedAnswer = option;
+                state.isAnswerCorrect = (option === currentQ.answer);
+                if (state.isAnswerCorrect) state.score++;
+                render();
+                if (state.isAnswerCorrect) {
+                    setTimeout(() => nextQuestion(), 1000);
+                }
+            }
+        }
+
+        function checkMultiAnswer() {
+            if (state.isAnswerCorrect !== null) return;
+            const currentQ = state.activeQuestions[state.currentQuestion];
+            if (!isMultiQuestion(currentQ)) return;
+            const selected = Array.isArray(state.selectedAnswer) ? state.selectedAnswer : [];
+            if (selected.length === 0) return;
+            const correctAnswers = Array.isArray(currentQ.answer) ? currentQ.answer : [currentQ.answer];
+            state.isAnswerCorrect = arraysEqual(selected, correctAnswers);
+            if (state.isAnswerCorrect) state.score++;
+            render();
+            if (state.isAnswerCorrect) {
+                setTimeout(() => nextQuestion(), 1000);
+            }
+        }
+
+        function nextQuestion() {
+            if (state.currentQuestion + 1 < state.activeQuestions.length) {
+                state.currentQuestion++;
+                state.selectedAnswer = null;
+                state.isAnswerCorrect = null;
+                render();
+            } else {
+                stopTimer();
+                state.view = 'results';
+                render();
+                enviarCorreo();
+            }
+        }
+
+        function enviarCorreo() {
+            if (!state.studentEmail) return;
+            state.emailStatus = 'sending';
+            render();
+            const scorePerc = Math.round((state.score / state.activeQuestions.length) * 100);
+            const totalQ = state.activeQuestions.length;
+            let imageUrl = '';
+            let mensaje = '';
+            if (scorePerc >= 90) {
+                imageUrl = 'https://img.icons8.com/color/128/medal2.png';
+                mensaje = `¡Excelente trabajo, ${state.studentName}! Obtuviste un resultado sobresaliente.`;
+            } else if (scorePerc >= 70) {
+                imageUrl = 'https://img.icons8.com/color/128/diploma.png';
+                mensaje = `¡Muy bien, ${state.studentName}! Has aprobado con un buen resultado.`;
+            } else if (scorePerc >= 50) {
+                imageUrl = 'https://img.icons8.com/color/128/ok.png';
+                mensaje = `Buen esfuerzo, ${state.studentName}. Sigue practicando para mejorar.`;
+            } else {
+                imageUrl = 'https://img.icons8.com/color/128/error.png';
+                mensaje = `Ánimo, ${state.studentName}. Revisa el material y vuelve a intentarlo.`;
+            }
+            const params = {
+                to_name: state.studentName,
+                to_email: state.studentEmail,
+                score: scorePerc,
+                correct_answers: state.score,
+                total_questions: totalQ,
+                mode_name: state.currentMode.toUpperCase(),
+                image_url: imageUrl,
+                mensaje: mensaje,
+                fecha: new Date().toLocaleDateString('es-ES', {
+                    year: 'numeric', month: 'long', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                })
+            };
+            emailjs.send("service_dhvsi72", "template_cy74x9h", params)
+                .then(() => {
+                    state.emailStatus = 'success';
+                    render();
+                })
+                .catch((err) => {
+                    console.error('Error EmailJS:', err);
+                    state.emailStatus = 'error';
+                    render();
+                });
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+           
+            let modeTitle = '';
+            let modeDesc = '';
+            if (state.currentMode === 'deber') {
+                modeTitle = '🧪 Deber';
+                modeDesc = 'Resuelve las 30 preguntas del banco en orden.';
+            } else if (state.currentMode === 'evaluacion') {
+                modeTitle = '📝 Repaso';
+                modeDesc = 'Prueba de 10 preguntas seleccionadas al azar.';
+            } else if (state.currentMode === 'extra') {
+                modeTitle = '📚 Práctica';
+                modeDesc = 'Resuelve las 20 preguntas de la Práctica.';
+            } else if (state.currentMode === 'evaluacion_final') {
+                modeTitle = '📊 Evaluación';
+                modeDesc = 'Resuelve las 16 preguntas de la Evaluación (tiempo límite: 16 min).';
+            }
+           
+            if (state.view === 'quiz_home') {
+                app.innerHTML = `
+                <div class="text-center py-16 animate-fade-in bg-white rounded-[3rem] shadow-xl border">
+                    <h2 class="text-4xl font-black text-slate-800 mb-2">${modeTitle}</h2>
+                    <p class="text-slate-500 mb-8 text-lg">${modeDesc}</p>
+                    <button onclick="startQuiz()" class="bg-emerald-600 text-white px-12 py-5 rounded-2xl font-black text-xl hover:bg-emerald-700 transition-all">
+                        INICIAR
+                    </button>
+                </div>`;
+            }
+
+            if (state.view === 'name_input') {
+                app.innerHTML = `
+                <div class="max-w-md mx-auto bg-white p-10 rounded-[2.5rem] shadow-2xl animate-fade-in">
+                    <h2 class="text-2xl font-black mb-6 text-center">Registro de Estudiante</h2>
+                    <input id="name-in" type="text" placeholder="Nombre y Apellido completo" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl mb-4 focus:border-emerald-500 outline-none">
+                   
+                    <div class="relative mb-1">
+                        <input id="email-in" type="email" placeholder="Correo para recibir nota (Gmail, Hotmail…)"
+                               class="w-full p-4 bg-slate-50 border border-slate-300 rounded-xl focus:border-emerald-500 outline-none transition-colors"
+                               oninput="onEmailInput()" onblur="onEmailInput()">
+                    </div>
+                   
+                    <div id="email-feedback" class="min-h-[22px] mb-1"></div>
+                    <div id="email-analysis" class="mb-5"></div>
+                   
+                    <button onclick="validaDatos()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-slate-800 transition-all">
+                        ENTRAR AL TEST
+                    </button>
+                    <p class="text-center text-[11px] text-slate-400 mt-4">Se verifica formato y se descartan correos temporales. No se envía nada hasta terminar el test.</p>
+                </div>`;
+                setTimeout(updateEmailUI, 50);
+            }
+
+            if (state.view === 'playing') {
+                const q = state.activeQuestions[state.currentQuestion];
+                const progress = ((state.currentQuestion + 1) / state.activeQuestions.length) * 100;
+                const multi = isMultiQuestion(q);
+                const selected = multi
+                    ? (Array.isArray(state.selectedAnswer) ? state.selectedAnswer : [])
+                    : (state.selectedAnswer ? [state.selectedAnswer] : []);
+
+                const multiHint = multi
+                    ? `<p class="text-sm text-sky-600 font-semibold mb-4">
+                         Selección múltiple · elige ${q.maxSelect} respuesta${q.maxSelect > 1 ? 's' : ''}
+                         ${selected.length > 0 ? `(${selected.length}/${q.maxSelect})` : ''}
+                       </p>`
+                    : '';
+
+                const timerHtml = (state.currentMode === 'evaluacion_final')
+                    ? `<div id="eval-timer" class="px-3 py-1.5 rounded-xl border-2 font-black text-sm tabular-nums ${getTimerPhaseClass(state.timeLeft)}">
+                           ${formatTime(state.timeLeft)}
+                       </div>`
+                    : '';
+
+                app.innerHTML = `
+                <div class="animate-fade-in">
+                    <div class="flex justify-between items-center mb-6 px-4 gap-4">
+                        <span class="font-black text-emerald-600">${state.currentQuestion + 1} / ${state.activeQuestions.length}</span>
+                        <div class="flex-1 max-w-xs bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div class="bg-emerald-500 h-full transition-all" style="width:${progress}%"></div>
+                        </div>
+                        ${timerHtml}
+                    </div>
+                    <div class="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl border">
+                        <h2 class="text-2xl font-bold text-slate-800 mb-2 leading-tight">${q.question}</h2>
+                        ${multiHint}
+                        <div class="grid gap-3">
+                            ${q.options.map((opt, idx) => {
+                                let style = "border-slate-100 bg-slate-50 hover:border-emerald-200";
+                                const isSelected = selected.includes(opt);
+
+                                if (state.isAnswerCorrect !== null) {
+                                    if (multi) {
+                                        const correctSet = Array.isArray(q.answer) ? q.answer : [q.answer];
+                                        if (correctSet.includes(opt) && isSelected) {
+                                            style = "border-emerald-500 bg-emerald-100 text-emerald-800";
+                                        } else if (isSelected && !correctSet.includes(opt)) {
+                                            style = "border-red-500 bg-red-100 text-red-800";
+                                        } else if (correctSet.includes(opt) && !isSelected) {
+                                            style = "border-emerald-300 bg-emerald-50 text-emerald-700";
+                                        }
+                                    } else {
+                                        if (opt === q.answer) {
+                                            style = "border-emerald-500 bg-emerald-100 text-emerald-800";
+                                        } else if (isSelected) {
+                                            style = "border-red-500 bg-red-100 text-red-800";
+                                        }
+                                    }
+                                } else if (isSelected) {
+                                    if (multi) {
+                                        style = "border-sky-400 bg-sky-100 text-sky-800";
+                                    } else {
+                                        style = "border-emerald-500 bg-emerald-100 text-emerald-800";
+                                    }
+                                }
+
+                                return `<button onclick="handleAnswer(${idx})" 
+                                            class="p-5 text-left border-2 rounded-xl font-bold transition-all ${style}">
+                                            ${opt}
+                                        </button>`;
+                            }).join('')}
+                        </div>
+
+                        ${multi && state.isAnswerCorrect === null ? `
+                            <button onclick="checkMultiAnswer()" 
+                                class="mt-6 w-full py-4 rounded-xl font-bold transition-all
+                                ${selected.length === q.maxSelect 
+                                    ? 'bg-sky-600 text-white hover:bg-sky-700' 
+                                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'}"
+                                ${selected.length !== q.maxSelect ? 'disabled' : ''}>
+                                Comprobar respuesta (${selected.length}/${q.maxSelect})
+                            </button>
+                        ` : ''}
+
+                        ${state.selectedAnswer !== null && state.isAnswerCorrect === false ? `
+                            <div class="mt-6 p-5 bg-amber-50 border border-amber-200 rounded-xl">
+                                <p class="font-bold text-amber-800 mb-2">Explicación:</p>
+                                <p class="text-slate-700">${q.explanation}</p>
+                            </div>
+                            <button onclick="nextQuestion()" class="mt-6 w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700 transition-all">
+                                Siguiente pregunta
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>`;
+            }
+
+            if (state.view === 'results') {
+                const scorePerc = Math.round((state.score / state.activeQuestions.length) * 100);
+                app.innerHTML = `
+                <div class="max-w-md mx-auto text-center animate-fade-in bg-white p-12 rounded-[3rem] shadow-2xl">
+                    <h2 class="text-2xl font-black mb-2">${state.studentName}</h2>
+                    <p class="text-slate-400 uppercase text-xs font-bold mb-6">${state.currentMode}</p>
+                    <div class="text-7xl font-black text-emerald-600 mb-4">${scorePerc}%</div>
+                    <p class="text-lg font-bold text-slate-700 mb-10">${state.score} / ${state.activeQuestions.length} correctas</p>
+                    <button onclick="location.reload()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold">VOLVER AL INICIO</button>
+                    <p class="mt-6 text-xs font-bold text-slate-400">
+                        ${state.emailStatus === 'success' ? '✅ Nota e imagen enviadas al correo' :
+                          state.emailStatus === 'error' ? '⚠️ Error al enviar nota e imagen' :
+                          '⏳ Enviando nota e imagen al correo...'}
+                    </p>
+                </div>`;
+            }
+        }
+
+        render();
+    </script>
+</body>
+</html>
